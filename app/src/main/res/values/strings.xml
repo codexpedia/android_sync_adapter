@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Sync Adapter</string>
+
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">codexpedia.example.com</string>
+    <string name="content_authority">com.codexpedia.app.syncadapter</string>
+</resources>

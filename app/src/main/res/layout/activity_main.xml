@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_centerInParent="true"
+        android:text="Hey! It works if you can see a notification message from the status bar every 1 minute.\n\nUpdate this constant SYNC_INTERVAL in the MyServiceSyncAdapter to change the update frequency." />
+</RelativeLayout>
