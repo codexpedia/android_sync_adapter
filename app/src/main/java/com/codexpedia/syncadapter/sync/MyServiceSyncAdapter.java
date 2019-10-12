@@ -2,6 +2,8 @@ package com.codexpedia.syncadapter.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
@@ -13,8 +15,8 @@ import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.codexpedia.syncadapter.MainActivity;
@@ -22,9 +24,10 @@ import com.codexpedia.syncadapter.R;
 
 public class MyServiceSyncAdapter extends AbstractThreadedSyncAdapter {
     //TODO change this constant SYNC_INTERVAL to change the sync frequency
-    public static final int SYNC_INTERVAL               = 60; //60 * 180;       // 60 seconds (1 minute) * 180 = 3 hours
+    public static final int SYNC_INTERVAL               = 60 * 65;       // 60 seconds * 65 = 1 hours 5 minutes, the minimum internal is 1 hour
     public static final int SYNC_FLEXTIME               = SYNC_INTERVAL/3;
     private static final int MOVIE_NOTIFICATION_ID      = 3004;
+    private static final String NOTIFICATION_CHANNEL_ID = "my_sync_notification_channel_id";
 
     public MyServiceSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -44,10 +47,11 @@ public class MyServiceSyncAdapter extends AbstractThreadedSyncAdapter {
     private void notifyDataDownloaded() {
         Context context = getContext();
         NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(android.support.v7.appcompat.R.drawable.notification_template_icon_bg)
+                new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_announcement_black_24dp)
                         .setContentTitle("Sync Adapter")
-                        .setContentText("New Data Available!");
+                        .setContentText("New Data Available!")
+                        .setChannelId(NOTIFICATION_CHANNEL_ID);
 
         // Opening the app when the user clicks on the notification.
         Intent resultIntent = new Intent(context, MainActivity.class);
@@ -60,7 +64,16 @@ public class MyServiceSyncAdapter extends AbstractThreadedSyncAdapter {
         mBuilder.setContentIntent(resultPendingIntent);
 
         NotificationManager mNotificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(MOVIE_NOTIFICATION_ID, mBuilder.build()); // MOVIE_NOTIFICATION_ID allows you to update the notification later on.
+
+        if (mNotificationManager != null) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "Sync Adapter", NotificationManager.IMPORTANCE_DEFAULT);
+                mNotificationManager.createNotificationChannel(channel);
+            }
+
+            mNotificationManager.notify(MOVIE_NOTIFICATION_ID, mBuilder.build()); // MOVIE_NOTIFICATION_ID allows you to update the notification later on.
+        }
     }
 
 
